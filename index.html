@@ -7,7 +7,7 @@
   <style>
     :root { 
       --ink: #17212b; 
-      --muted: #73808c; 
+      --muted: #576574; 
       --paper: #f6f2ea; 
       --panel: #fffdfa; 
       --line: #e8e1d5; 
@@ -41,7 +41,7 @@
     }
     
     .calculator { 
-      width: min(100%, 540px); 
+      width: min(100%, 560px); 
       padding: 24px; 
       background: var(--card-bg); 
       border: 1px solid rgba(255, 255, 255, 0.85); 
@@ -153,6 +153,38 @@
     .msg-box.error { display: block; background: #fde8e8; color: #c53030; border: 1px solid #feb2b2; }
     .msg-box.warning { display: block; background: #fffaf0; color: #9c4221; border: 1px solid #fbd38d; }
 
+    /* 國健署單餐標準六大類參考卡片 */
+    .hpa-six-card {
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: rgba(39, 100, 79, 0.08);
+      border: 1px solid var(--mint-ink);
+      border-radius: 16px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .hpa-six-card h4 {
+      margin: 0 0 6px 0;
+      font-size: 13px;
+      color: var(--mint-ink);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .hpa-six-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 6px;
+      text-align: center;
+    }
+    .hpa-six-item {
+      background: rgba(255, 255, 255, 0.6);
+      padding: 6px 4px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+    }
+
     /* 國健署營養解析螢幕 */
     .recommend-screen {
       margin-top: 20px;
@@ -197,23 +229,43 @@
 
     .hint { margin-top: 20px; color: var(--muted); font-size: 12px; text-align: center; line-height: 1.5; }
 
+    /* 深色模式文字對比度全面優化 */
     .dark { 
-      --paper: #17212b; 
-      --panel: #202c37; 
-      --ink: #eef4f1; 
-      --muted: #b0c0ba; 
-      --line: #364651; 
-      --card-bg: rgba(32, 44, 55, 0.92);
-      --input-bg: #2d3b46;
+      --paper: #121921; 
+      --panel: #1e2933; 
+      --ink: #f0f4f8; 
+      --muted: #94a3b8; 
+      --line: #334155; 
+      --card-bg: rgba(30, 41, 51, 0.94);
+      --input-bg: #283542;
+      --mint: #1e3a30;
+      --mint-ink: #6ee7b7;
     }
 
-    .dark input, .dark select { color: #eef4f1; }
-    .dark .msg-box.error { background: #4a1d1d; color: #feb2b2; border-color: #9b2c2c; }
-    .dark .msg-box.warning { background: #4a3319; color: #fbd38d; border-color: #9c4221; }
+    .dark input, .dark select { 
+      color: #f8fafc; 
+      border-color: #475569;
+    }
+    .dark input::placeholder { color: #64748b; }
+    .dark select option { background: #1e2933; color: #f8fafc; }
+    
+    .dark .hpa-six-card {
+      background: rgba(110, 231, 183, 0.08);
+      border-color: #059669;
+    }
+    .dark .hpa-six-item {
+      background: rgba(30, 41, 51, 0.8);
+      border-color: #334155;
+      color: #cbd5e1;
+    }
+
+    .dark .msg-box.error { background: #451212; color: #fca5a5; border-color: #991b1b; }
+    .dark .msg-box.warning { background: #45240f; color: #fde047; border-color: #854d0e; }
 
     @media (max-width: 480px) { 
       .form-row { grid-template-columns: 1fr; }
       .calculator { padding: 18px; } 
+      .hpa-six-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -242,6 +294,7 @@
             <option value="1.2">久坐/辦公室族群 (x 1.2)</option>
             <option value="1.375">輕度運動/每週1-3天 (x 1.375)</option>
             <option value="1.55">中度運動/每週3-5天 (x 1.55)</option>
+            <option value="1.725">🏋️ 重度運動/高強度訓練 (x 1.725)</option>
           </select>
         </div>
       </div>
@@ -276,14 +329,27 @@
       
       <div class="hpa-info-grid">
         <div>蛋白質份數：<br><strong id="recPortion" style="color:#fff; font-size:14px;">-</strong></div>
-        <div>占全天熱量目標：<br><strong id="recRatio" style="color:var(--mint); font-size:14px;">-</strong></div>
+        <div>占全天熱量目標：<br><strong id="recRatio" style="color:var(--mint-ink); font-size:14px;">-</strong></div>
         <div style="grid-column: span 2; padding-top:4px;" id="recHpaTip">💡 國健署六大類指引：-</div>
       </div>
     </section>
 
     <!-- 符合條件列表 -->
     <section id="resultsArea" class="results-area">
-      <div class="results-title" id="resultsTitle">📋 符合條件的外食組合</div>
+      <!-- 國健署建議單餐六大類標準份數卡片 -->
+      <div class="hpa-six-card">
+        <h4>🍱 國健署「我的餐盤」單餐黃金比例參考 (2000 kcal基準)</h4>
+        <div class="hpa-six-grid">
+          <div class="hpa-six-item">🌾 全穀雜糧<br><b>1.5 碗</b></div>
+          <div class="hpa-six-item">🌿 豆魚蛋肉<br><b>2 份</b></div>
+          <div class="hpa-six-item">🥦 蔬菜類<br><b>1 碗</b></div>
+          <div class="hpa-six-item">🍎 水果類<br><b>1 份 (拳頭大)</b></div>
+          <div class="hpa-six-item">🥛 乳品類<br><b>0.5 杯</b></div>
+          <div class="hpa-six-item">🥜 堅果種子<br><b>1 茶匙</b></div>
+        </div>
+      </div>
+
+      <div class="results-title" id="resultsTitle" style="margin-top:16px;">📋 符合熱量條件的外食組合</div>
       <table>
         <thead>
           <tr>
@@ -302,7 +368,6 @@
   </main>
 
   <script>
-    // 涵蓋國健署六大類食物的延伸外食資料庫
     const FOOD_DATABASE = [
       { name: "高纖無糖豆漿 + 烤地瓜", calories: 300, carbs: 40, protein: 18, fat: 5, category: "豆", hpaGroup: "豆類 + 全穀雜糧類", tip: "未精製全穀搭配植物性蛋白，高纖且能穩定血糖" },
       { name: "涼拌毛豆仁 + 燕麥奶", calories: 250, carbs: 30, protein: 12, fat: 6, category: "豆", hpaGroup: "豆類 + 全穀雜糧類", tip: "毛豆為植物蛋白首選，含豐富膳食纖維與大豆異黃酮" },
@@ -348,10 +413,8 @@
         showMsg('warning', '⚠️ 國健署提醒：成年人單餐熱量建議不低於 300 大卡，過度節食可能導致基礎代謝率下降！');
       }
 
-      // 計算個人全天估算熱量 TDEE
       const dailyTDEE = Math.round(weight * 22 * activity); 
 
-      // 條件篩選
       const results = [];
       for (let i = 0; i < FOOD_DATABASE.length; i++) {
         const item = FOOD_DATABASE[i];
@@ -371,7 +434,6 @@
         return;
       }
 
-      // 隨機推薦餐點與國健署指南換算
       const randomItem = results[Math.floor(Math.random() * results.length)];
       const proteinPortion = (randomItem.protein / 7).toFixed(1); 
       const mealTdeeRatio = Math.round((randomItem.calories / dailyTDEE) * 100);
@@ -384,7 +446,6 @@
       
       recommendScreen.classList.add('active');
 
-      // 渲染表格
       document.getElementById('resultsTitle').textContent = `📋 符合熱量條件的外食組合 (共 ${results.length} 筆)`;
       resultsTableBody.innerHTML = '';
       
@@ -399,7 +460,6 @@
         resultsTableBody.appendChild(tr);
       });
 
-      resultsArea.classList.active;
       resultsArea.classList.add('active');
     }
 
