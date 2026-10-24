@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>琥珀健康飲食試算器</title>
+  <title>琥珀健康飲食試算器 - 衛福部國健署指南延伸版</title>
   <style>
     :root { 
       --ink: #17212b; 
@@ -15,7 +15,7 @@
       --orange-dark: #cf5120; 
       --mint: #dff1e9; 
       --mint-ink: #27644f; 
-      --card-bg: rgba(255, 253, 250, 0.9);
+      --card-bg: rgba(255, 253, 250, 0.92);
       --input-bg: #f1eee8;
       --tag-bean: #2e7d32;
       --tag-fish: #0288d1;
@@ -39,7 +39,7 @@
     }
     
     .calculator { 
-      width: min(100%, 480px); 
+      width: min(100%, 520px); 
       padding: 24px; 
       background: var(--card-bg); 
       border: 1px solid rgba(255, 255, 255, 0.85); 
@@ -52,7 +52,7 @@
       display: flex; 
       justify-content: space-between; 
       align-items: center; 
-      margin-bottom: 20px; 
+      margin-bottom: 16px; 
     }
     
     .brand { font-size: 14px; letter-spacing: .12em; font-weight: 700; }
@@ -70,6 +70,23 @@
       transition: background 0.2s ease;
     }
 
+    .subtitle-banner {
+      background: var(--mint);
+      color: var(--mint-ink);
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 12px;
+      line-height: 1.4;
+      margin-bottom: 18px;
+      font-weight: 500;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
     .form-group {
       margin-bottom: 14px;
       display: flex;
@@ -85,16 +102,16 @@
 
     input, select {
       width: 100%;
-      min-height: 48px;
-      padding: 0 14px;
+      min-height: 46px;
+      padding: 0 12px;
       border: 1px solid var(--line);
       border-radius: 14px;
       background: var(--input-bg);
       color: var(--ink);
       font: inherit;
-      font-size: 15px;
+      font-size: 14px;
       outline: none;
-      transition: border-color 0.2s ease, background 0.2s ease;
+      transition: border-color 0.2s ease;
     }
 
     input:focus, select:focus {
@@ -104,7 +121,7 @@
     .submit-btn {
       width: 100%;
       min-height: 52px;
-      margin-top: 10px;
+      margin-top: 8px;
       border: 0;
       border-radius: 16px;
       color: #fff;
@@ -122,10 +139,6 @@
       transform: translateY(-2px);
     }
 
-    .submit-btn:active {
-      transform: translateY(1px);
-    }
-
     .msg-box {
       margin-top: 16px;
       padding: 12px 16px;
@@ -135,24 +148,14 @@
       display: none;
     }
 
-    .msg-box.error {
-      display: block;
-      background: #fde8e8;
-      color: #c53030;
-      border: 1px solid #feb2b2;
-    }
+    .msg-box.error { display: block; background: #fde8e8; color: #c53030; border: 1px solid #feb2b2; }
+    .msg-box.warning { display: block; background: #fffaf0; color: #9c4221; border: 1px solid #fbd38d; }
 
-    .msg-box.warning {
-      display: block;
-      background: #fffaf0;
-      color: #9c4221;
-      border: 1px solid #fbd38d;
-    }
-
+    /* 國健署專屬營養試算結果螢幕 */
     .recommend-screen {
       margin-top: 20px;
-      padding: 16px;
-      border-radius: 18px;
+      padding: 18px;
+      border-radius: 20px;
       background: var(--ink);
       color: #fff;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09);
@@ -161,37 +164,28 @@
 
     .recommend-screen.active { display: block; }
     .recommend-title { font-size: 12px; color: #aab5bc; margin-bottom: 6px; letter-spacing: .05em; }
-    .recommend-name { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 4px; }
-    .recommend-meta { font-size: 13px; color: var(--mint); }
-
-    .results-area {
-      margin-top: 20px;
-      display: none;
+    .recommend-name { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .recommend-meta { font-size: 13px; color: var(--mint); margin-bottom: 12px; }
+    
+    .hpa-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 12px;
+      color: #d0d7de;
     }
 
+    .results-area { margin-top: 20px; display: none; }
     .results-area.active { display: block; }
     .results-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    th, td {
-      padding: 10px 8px;
-      text-align: left;
-      border-bottom: 1px solid var(--line);
-    }
-
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--line); }
     th { color: var(--muted); font-weight: 600; }
 
-    .tag {
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-    }
+    .tag { padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
     .tag-豆 { background: #e8f5e9; color: var(--tag-bean); }
     .tag-魚 { background: #e1f5fe; color: var(--tag-fish); }
     .tag-蛋 { background: #fff3e0; color: var(--tag-egg); }
@@ -213,53 +207,85 @@
     .dark .msg-box.error { background: #4a1d1d; color: #feb2b2; border-color: #9b2c2c; }
     .dark .msg-box.warning { background: #4a3319; color: #fbd38d; border-color: #9c4221; }
 
-    @media (max-width: 360px) { 
-      .calculator { padding: 18px; border-radius: 22px; } 
+    @media (max-width: 480px) { 
+      .form-row { grid-template-columns: 1fr; }
+      .calculator { padding: 18px; } 
     }
   </style>
 </head>
 <body>
   <main class="calculator" aria-label="琥珀健康飲食試算器">
     <div class="top">
-      <span class="brand">AMBER / DIET</span>
+      <span class="brand">AMBER / DIET Guide</span>
       <button class="mode" id="theme" type="button" aria-label="切換深色模式">深色模式</button>
     </div>
 
+    <div class="subtitle-banner">
+      🏛️ 依據衛生福利部國民健康署《每日飲食指南》<br>
+      原則：豆 > 魚 > 蛋 > 肉｜蛋白質 1 份 ≒ 7 克
+    </div>
+
     <form id="calcForm" onsubmit="event.preventDefault(); calculate();">
-      <div class="form-group">
-        <label for="budget">單餐預算上限 (元)</label>
-        <input type="number" id="budget" placeholder="例如：100" min="1" required>
+      <!-- 國健署個人化身體數據估算 -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="activity">每日活動強度 (TDEE)</label>
+          <select id="activity">
+            <option value="1.2">久坐/辦公室族群 (基數 x 1.2)</option>
+            <option value="1.375">輕度運動/每週1-3天 (x 1.375)</option>
+            <option value="1.55">中度運動/每週3-5天 (x 1.55)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="weight">體重 (kg)</label>
+          <input type="number" id="weight" placeholder="例如：60" value="60" min="30" max="200" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="budget">單餐預算上限 (元)</label>
+          <input type="number" id="budget" placeholder="例如：100" min="1" required>
+        </div>
+
+        <div class="form-group">
+          <label for="calories">單餐熱量上限 (kcal)</label>
+          <input type="number" id="calories" placeholder="例如：600" min="1" required>
+        </div>
       </div>
 
       <div class="form-group">
-        <label for="calories">單餐熱量上限 (kcal)</label>
-        <input type="number" id="calories" placeholder="例如：600" min="1" required>
-      </div>
-
-      <div class="form-group">
-        <label for="category">蛋白質優先來源 (國健署推薦順序)</label>
+        <label for="category">國健署蛋白質優先順序</label>
         <select id="category">
           <option value="ALL">全部類別（顯示所有符合條件）</option>
-          <option value="豆">🌿 豆類（首選：植物性蛋白、高纖低脂）</option>
-          <option value="魚">🐟 魚類/海鮮（次選：富含 Omega-3）</option>
-          <option value="蛋">🥚 雞蛋（優質完全蛋白質）</option>
-          <option value="肉">🥩 肉類（禽肉優先於紅肉）</option>
+          <option value="豆">🌿 豆類（首選：植物性蛋白、零膽固醇、高纖）</option>
+          <option value="魚">🐟 魚類與海鮮（次選：飽和脂肪低、富含 Omega-3）</option>
+          <option value="蛋">🥚 雞蛋（優質完全蛋白質、富含卵磷脂）</option>
+          <option value="肉">🥩 肉類（禽肉優先於紅肉、避免加工肉）</option>
         </select>
       </div>
 
-      <button class="submit-btn" type="submit">🔍 開始計算與推薦</button>
+      <button class="submit-btn" type="submit">🔍 開始計算與國健署指南對照</button>
     </form>
 
     <div id="msgBox" class="msg-box"></div>
 
+    <!-- 國健署營養解析螢幕 -->
     <section id="recommendScreen" class="recommend-screen" aria-live="polite">
-      <div class="recommend-title">🎲 今日試算隨機推薦首選</div>
+      <div class="recommend-title">🎲 試算隨機首選餐點</div>
       <div class="recommend-name" id="recName">-</div>
       <div class="recommend-meta" id="recMeta">-</div>
+      
+      <div class="hpa-info-grid">
+        <div>蛋白質相當於：<br><strong id="recPortion" style="color:#fff; font-size:14px;">-</strong> 份</div>
+        <div>佔個人每日蛋白質：<br><strong id="recRatio" style="color:var(--mint); font-size:14px;">-</strong></div>
+        <div style="grid-column: span 2; padding-top:4px;" id="recHpaTip">💡 國健署提醒：-</div>
+      </div>
     </section>
 
+    <!-- 符合條件列表 -->
     <section id="resultsArea" class="results-area">
-      <div class="results-title" id="resultsTitle">📋 符合條件的餐點選擇</div>
+      <div class="results-title" id="resultsTitle">📋 符合條件的外食組合</div>
       <table>
         <thead>
           <tr>
@@ -267,7 +293,7 @@
             <th>類別</th>
             <th>價格</th>
             <th>熱量</th>
-            <th>蛋白質</th>
+            <th>蛋白質份數</th>
           </tr>
         </thead>
         <tbody id="resultsTableBody">
@@ -275,24 +301,27 @@
       </table>
     </section>
 
-    <p class="hint">依據國健署每日飲食指南：豆 > 魚 > 蛋 > 肉<br>數據僅供一般飲食參考</p>
+    <p class="hint">參考資料：衛福部國民健康署《每日飲食指南手冊》<br>三大營養素建議比例：蛋白質 10-20%、脂質 20-30%、醣類 50-60%</p>
   </main>
 
   <script>
+    // 擴充包含國健署指引提示的餐點資料庫
     const FOOD_DATABASE = [
-      { name: "高纖無糖豆漿", price: 25, calories: 160, protein: 15, category: "豆" },
-      { name: "涼拌毛豆仁", price: 35, calories: 110, protein: 9, category: "豆" },
-      { name: "滷豆腐", price: 20, calories: 90, protein: 7, category: "豆" },
-      { name: "水煮鮭魚菲力", price: 85, calories: 220, protein: 24, category: "魚" },
-      { name: "鮮魚味噌湯", price: 45, calories: 120, protein: 12, category: "魚" },
-      { name: "茶葉蛋", price: 13, calories: 75, protein: 7, category: "蛋" },
-      { name: "石安牧場溫泉蛋", price: 32, calories: 80, protein: 8, category: "蛋" },
-      { name: "即食舒肥雞胸肉", price: 59, calories: 140, protein: 23, category: "肉" },
-      { name: "美式烤雞腿", price: 65, calories: 280, protein: 20, category: "肉" },
-      { name: "經典牛丼便當", price: 95, calories: 650, protein: 25, category: "肉" }
+      { name: "高纖無糖豆漿", price: 25, calories: 160, protein: 15, category: "豆", tip: "植物蛋白首選，含大豆異黃酮與膳食纖維" },
+      { name: "涼拌毛豆仁", price: 35, calories: 110, protein: 9, category: "豆", tip: "原態豆類，高蛋白且飽和脂肪極低" },
+      { name: "滷豆腐", price: 20, calories: 90, protein: 7, category: "豆", tip: "傳統豆製品，易消化且富含植物蛋白" },
+      { name: "水煮鮭魚菲力", price: 85, calories: 220, protein: 24, category: "魚", tip: "富含 DHA 與 EPA 好油，優於紅肉脂肪" },
+      { name: "鮮魚味噌湯", price: 45, calories: 120, protein: 12, category: "魚", tip: "低脂海鮮來源，注意鹽份適量飲用" },
+      { name: "茶葉蛋", price: 13, calories: 75, protein: 7, category: "蛋", tip: "完全蛋白質，蛋黃富含卵磷脂與維生素B群" },
+      { name: "石安牧場溫泉蛋", price: 32, calories: 80, protein: 8, category: "蛋", tip: "輕鬆補充優質蛋白質，吸收率高" },
+      { name: "即食舒肥雞胸肉", price: 59, calories: 140, protein: 23, category: "肉", tip: "白肉首選，低脂高蛋白，優於豬牛肉" },
+      { name: "美式烤雞腿", price: 65, calories: 280, protein: 20, category: "肉", tip: "去除外皮可大幅減少飽和脂肪攝取" },
+      { name: "經典牛丼便當", price: 95, calories: 650, protein: 25, category: "肉", tip: "紅肉飽和脂肪較高，國健署建議偶爾食用即可" }
     ];
 
     function calculate() {
+      const weight = Number(document.getElementById('weight').value) || 60;
+      const activity = Number(document.getElementById('activity').value) || 1.2;
       const budgetInput = document.getElementById('budget').value;
       const caloriesInput = document.getElementById('calories').value;
       const categorySelect = document.getElementById('category').value;
@@ -320,10 +349,15 @@
         return;
       }
 
+      // 國健署防呆與健康建議
       if (calories < 300) {
-        showMsg('warning', '⚠️ 健康提醒：成年人單餐熱量建議不低於 300 大卡，過度節食可能影響健康喔！');
+        showMsg('warning', '⚠️ 國健署提醒：成年人單餐熱量建議不低於 300 大卡，過度節食可能導致基礎代謝率下降！');
       }
 
+      // 1. 估算國健署建議每日蛋白質需求 (每公斤體重 1.1 克)
+      const dailyProteinTargetGram = weight * 1.1; 
+
+      // 2. 條件篩選
       const results = [];
       for (let i = 0; i < FOOD_DATABASE.length; i++) {
         const item = FOOD_DATABASE[i];
@@ -339,22 +373,33 @@
         return;
       }
 
+      // 3. 隨機推薦餐點與國健署指南換算
       const randomItem = results[Math.floor(Math.random() * results.length)];
+      // 國健署定義：1 份豆魚蛋肉類 = 7 公克蛋白質
+      const proteinPortion = (randomItem.protein / 7).toFixed(1); 
+      const dailyRatio = Math.round((randomItem.protein / dailyProteinTargetGram) * 100);
+
       document.getElementById('recName').textContent = randomItem.name;
       document.getElementById('recMeta').textContent = `${randomItem.category}類 · ${randomItem.price}元 · ${randomItem.calories} kcal · 蛋白質 ${randomItem.protein}g`;
+      document.getElementById('recPortion').textContent = `${proteinPortion} 份`;
+      document.getElementById('recRatio').textContent = `約 ${dailyRatio}%`;
+      document.getElementById('recHpaTip').textContent = `💡 國健署解析：${randomItem.tip}`;
+      
       recommendScreen.classList.add('active');
 
-      document.getElementById('resultsTitle').textContent = `📋 符合條件的餐點選擇 (共 ${results.length} 筆)`;
+      // 4. 渲染表格
+      document.getElementById('resultsTitle').textContent = `📋 符合條件的餐點 (共 ${results.length} 筆)`;
       resultsTableBody.innerHTML = '';
       
       results.forEach(item => {
+        const portions = (item.protein / 7).toFixed(1);
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><strong>${item.name}</strong></td>
           <td><span class="tag tag-${item.category}">${item.category}類</span></td>
           <td>${item.price} 元</td>
           <td>${item.calories} kcal</td>
-          <td>${item.protein} g</td>
+          <td>${item.protein}g (<b>${portions}</b> 份)</td>
         `;
         resultsTableBody.appendChild(tr);
       });
