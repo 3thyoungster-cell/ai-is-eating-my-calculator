@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>琥珀健康飲食試算器</title>
+  <style>
+    :root { 
+      --ink: #17212b; 
+      --muted: #73808c; 
+      --paper: #f6f2ea; 
+      --panel: #fffdfa; 
+      --line: #e8e1d5; 
+      --orange: #ec6b31; 
+      --orange-dark: #cf5120; 
+      --mint: #dff1e9; 
+      --mint-ink: #27644f; 
+      --card-bg: rgba(255, 253, 250, 0.9);
+      --input-bg: #f1eee8;
+      --tag-bean: #2e7d32;
+      --tag-fish: #0288d1;
+      --tag-egg: #ed6c02;
+      --tag-meat: #d32f2f;
+    }
+    
+    * { box-sizing: border-box; }
+    
+    body { 
+      margin: 0; 
+      min-height: 100vh; 
+      display: grid; 
+      place-items: center; 
+      padding: 28px 16px; 
+      color: var(--ink); 
+      background: radial-gradient(circle at 16% 12%, #f9d9bf 0 9%, transparent 30%), 
+                  radial-gradient(circle at 86% 88%, #cce9da 0 9%, transparent 32%), 
+                  var(--paper); 
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; 
+    }
+    
+    .calculator { 
+      width: min(100%, 480px); 
+      padding: 24px; 
+      background: var(--card-bg); 
+      border: 1px solid rgba(255, 255, 255, 0.85); 
+      border-radius: 28px; 
+      box-shadow: 0 24px 60px rgba(81, 61, 37, 0.16); 
+      backdrop-filter: blur(12px); 
+    }
+    
+    .top { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 20px; 
+    }
+    
+    .brand { font-size: 14px; letter-spacing: .12em; font-weight: 700; }
+    
+    .mode { 
+      border: 0; 
+      border-radius: 999px; 
+      padding: 8px 14px; 
+      color: var(--mint-ink); 
+      background: var(--mint); 
+      font: inherit; 
+      font-size: 12px; 
+      font-weight: 600;
+      cursor: pointer; 
+      transition: background 0.2s ease;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--input-bg);
+      color: var(--ink);
+      font: inherit;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--orange);
+    }
+
+    .submit-btn {
+      width: 100%;
+      min-height: 52px;
+      margin-top: 10px;
+      border: 0;
+      border-radius: 16px;
+      color: #fff;
+      background: var(--orange);
+      font: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(236, 107, 49, 0.24);
+      transition: transform 0.12s ease, background 0.12s ease;
+    }
+
+    .submit-btn:hover {
+      background: var(--orange-dark);
+      transform: translateY(-2px);
+    }
+
+    .submit-btn:active {
+      transform: translateY(1px);
+    }
+
+    .msg-box {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .msg-box.error {
+      display: block;
+      background: #fde8e8;
+      color: #c53030;
+      border: 1px solid #feb2b2;
+    }
+
+    .msg-box.warning {
+      display: block;
+      background: #fffaf0;
+      color: #9c4221;
+      border: 1px solid #fbd38d;
+    }
+
+    .recommend-screen {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 18px;
+      background: var(--ink);
+      color: #fff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09);
+      display: none;
+    }
+
+    .recommend-screen.active { display: block; }
+    .recommend-title { font-size: 12px; color: #aab5bc; margin-bottom: 6px; letter-spacing: .05em; }
+    .recommend-name { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .recommend-meta { font-size: 13px; color: var(--mint); }
+
+    .results-area {
+      margin-top: 20px;
+      display: none;
+    }
+
+    .results-area.active { display: block; }
+    .results-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th { color: var(--muted); font-weight: 600; }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .tag-豆 { background: #e8f5e9; color: var(--tag-bean); }
+    .tag-魚 { background: #e1f5fe; color: var(--tag-fish); }
+    .tag-蛋 { background: #fff3e0; color: var(--tag-egg); }
+    .tag-肉 { background: #ffebee; color: var(--tag-meat); }
+
+    .hint { margin-top: 20px; color: var(--muted); font-size: 12px; text-align: center; line-height: 1.5; }
+
+    .dark { 
+      --paper: #17212b; 
+      --panel: #202c37; 
+      --ink: #eef4f1; 
+      --muted: #b0c0ba; 
+      --line: #364651; 
+      --card-bg: rgba(32, 44, 55, 0.92);
+      --input-bg: #2d3b46;
+    }
+
+    .dark input, .dark select { color: #eef4f1; }
+    .dark .msg-box.error { background: #4a1d1d; color: #feb2b2; border-color: #9b2c2c; }
+    .dark .msg-box.warning { background: #4a3319; color: #fbd38d; border-color: #9c4221; }
+
+    @media (max-width: 360px) { 
+      .calculator { padding: 18px; border-radius: 22px; } 
+    }
+  </style>
+</head>
+<body>
+  <main class="calculator" aria-label="琥珀健康飲食試算器">
+    <div class="top">
+      <span class="brand">AMBER / DIET</span>
+      <button class="mode" id="theme" type="button" aria-label="切換深色模式">深色模式</button>
+    </div>
+
+    <form id="calcForm" onsubmit="event.preventDefault(); calculate();">
+      <div class="form-group">
+        <label for="budget">單餐預算上限 (元)</label>
+        <input type="number" id="budget" placeholder="例如：100" min="1" required>
+      </div>
+
+      <div class="form-group">
+        <label for="calories">單餐熱量上限 (kcal)</label>
+        <input type="number" id="calories" placeholder="例如：600" min="1" required>
+      </div>
+
+      <div class="form-group">
+        <label for="category">蛋白質優先來源 (國健署推薦順序)</label>
+        <select id="category">
+          <option value="ALL">全部類別（顯示所有符合條件）</option>
+          <option value="豆">🌿 豆類（首選：植物性蛋白、高纖低脂）</option>
+          <option value="魚">🐟 魚類/海鮮（次選：富含 Omega-3）</option>
+          <option value="蛋">🥚 雞蛋（優質完全蛋白質）</option>
+          <option value="肉">🥩 肉類（禽肉優先於紅肉）</option>
+        </select>
+      </div>
+
+      <button class="submit-btn" type="submit">🔍 開始計算與推薦</button>
+    </form>
+
+    <div id="msgBox" class="msg-box"></div>
+
+    <section id="recommendScreen" class="recommend-screen" aria-live="polite">
+      <div class="recommend-title">🎲 今日試算隨機推薦首選</div>
+      <div class="recommend-name" id="recName">-</div>
+      <div class="recommend-meta" id="recMeta">-</div>
+    </section>
+
+    <section id="resultsArea" class="results-area">
+      <div class="results-title" id="resultsTitle">📋 符合條件的餐點選擇</div>
+      <table>
+        <thead>
+          <tr>
+            <th>品名</th>
+            <th>類別</th>
+            <th>價格</th>
+            <th>熱量</th>
+            <th>蛋白質</th>
+          </tr>
+        </thead>
+        <tbody id="resultsTableBody">
+        </tbody>
+      </table>
+    </section>
+
+    <p class="hint">依據國健署每日飲食指南：豆 > 魚 > 蛋 > 肉<br>數據僅供一般飲食參考</p>
+  </main>
+
+  <script>
+    const FOOD_DATABASE = [
+      { name: "高纖無糖豆漿", price: 25, calories: 160, protein: 15, category: "豆" },
+      { name: "涼拌毛豆仁", price: 35, calories: 110, protein: 9, category: "豆" },
+      { name: "滷豆腐", price: 20, calories: 90, protein: 7, category: "豆" },
+      { name: "水煮鮭魚菲力", price: 85, calories: 220, protein: 24, category: "魚" },
+      { name: "鮮魚味噌湯", price: 45, calories: 120, protein: 12, category: "魚" },
+      { name: "茶葉蛋", price: 13, calories: 75, protein: 7, category: "蛋" },
+      { name: "石安牧場溫泉蛋", price: 32, calories: 80, protein: 8, category: "蛋" },
+      { name: "即食舒肥雞胸肉", price: 59, calories: 140, protein: 23, category: "肉" },
+      { name: "美式烤雞腿", price: 65, calories: 280, protein: 20, category: "肉" },
+      { name: "經典牛丼便當", price: 95, calories: 650, protein: 25, category: "肉" }
+    ];
+
+    function calculate() {
+      const budgetInput = document.getElementById('budget').value;
+      const caloriesInput = document.getElementById('calories').value;
+      const categorySelect = document.getElementById('category').value;
+
+      const msgBox = document.getElementById('msgBox');
+      const recommendScreen = document.getElementById('recommendScreen');
+      const resultsArea = document.getElementById('resultsArea');
+      const resultsTableBody = document.getElementById('resultsTableBody');
+
+      msgBox.className = 'msg-box';
+      msgBox.style.display = 'none';
+      recommendScreen.classList.remove('active');
+      resultsArea.classList.remove('active');
+
+      const budget = Number(budgetInput);
+      const calories = Number(caloriesInput);
+
+      if (!budgetInput || !caloriesInput || isNaN(budget) || isNaN(calories)) {
+        showMsg('error', '❌ 請完整輸入有效的預算與熱量數值！');
+        return;
+      }
+
+      if (budget <= 0 || calories <= 0) {
+        showMsg('error', '❌ 預算與熱量必須為大於 0 的正整數！');
+        return;
+      }
+
+      if (calories < 300) {
+        showMsg('warning', '⚠️ 健康提醒：成年人單餐熱量建議不低於 300 大卡，過度節食可能影響健康喔！');
+      }
+
+      const results = [];
+      for (let i = 0; i < FOOD_DATABASE.length; i++) {
+        const item = FOOD_DATABASE[i];
+        if (item.price <= budget && item.calories <= calories) {
+          if (categorySelect === 'ALL' || item.category === categorySelect) {
+            results.push(item);
+          }
+        }
+      }
+
+      if (results.length === 0) {
+        showMsg('warning', '⚠️ 在您設定的條件下找不到合適的餐點，建議提高預算或放寬熱量限制！');
+        return;
+      }
+
+      const randomItem = results[Math.floor(Math.random() * results.length)];
+      document.getElementById('recName').textContent = randomItem.name;
+      document.getElementById('recMeta').textContent = `${randomItem.category}類 · ${randomItem.price}元 · ${randomItem.calories} kcal · 蛋白質 ${randomItem.protein}g`;
+      recommendScreen.classList.add('active');
+
+      document.getElementById('resultsTitle').textContent = `📋 符合條件的餐點選擇 (共 ${results.length} 筆)`;
+      resultsTableBody.innerHTML = '';
+      
+      results.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${item.name}</strong></td>
+          <td><span class="tag tag-${item.category}">${item.category}類</span></td>
+          <td>${item.price} 元</td>
+          <td>${item.calories} kcal</td>
+          <td>${item.protein} g</td>
+        `;
+        resultsTableBody.appendChild(tr);
+      });
+
+      resultsArea.classList.add('active');
+    }
+
+    function showMsg(type, text) {
+      const msgBox = document.getElementById('msgBox');
+      msgBox.className = `msg-box ${type}`;
+      msgBox.textContent = text;
+      msgBox.style.display = 'block';
+    }
+
+    document.querySelector('#theme').addEventListener('click', event => {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      event.currentTarget.textContent = isDark ? '淺色模式' : '深色模式';
+    });
+  </script>
+</body>
+</html>
