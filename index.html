@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>琥珀健康飲食試算器 - 衛福部國健署指南延伸版</title>
+  <title>琥珀健康飲食試算器 - 國健署全方位六大類飲食版</title>
   <style>
     :root { 
       --ink: #17212b; 
@@ -21,6 +21,8 @@
       --tag-fish: #0288d1;
       --tag-egg: #ed6c02;
       --tag-meat: #d32f2f;
+      --tag-grain: #8d6e63;
+      --tag-veg: #388e3c;
     }
     
     * { box-sizing: border-box; }
@@ -39,7 +41,7 @@
     }
     
     .calculator { 
-      width: min(100%, 520px); 
+      width: min(100%, 540px); 
       padding: 24px; 
       background: var(--card-bg); 
       border: 1px solid rgba(255, 255, 255, 0.85); 
@@ -76,7 +78,7 @@
       padding: 10px 14px;
       border-radius: 14px;
       font-size: 12px;
-      line-height: 1.4;
+      line-height: 1.5;
       margin-bottom: 18px;
       font-weight: 500;
     }
@@ -151,7 +153,7 @@
     .msg-box.error { display: block; background: #fde8e8; color: #c53030; border: 1px solid #feb2b2; }
     .msg-box.warning { display: block; background: #fffaf0; color: #9c4221; border: 1px solid #fbd38d; }
 
-    /* 國健署專屬營養試算結果螢幕 */
+    /* 國健署營養解析螢幕 */
     .recommend-screen {
       margin-top: 20px;
       padding: 18px;
@@ -170,7 +172,7 @@
     .hpa-info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 10px;
       padding-top: 10px;
       border-top: 1px solid rgba(255, 255, 255, 0.15);
       font-size: 12px;
@@ -190,6 +192,8 @@
     .tag-魚 { background: #e1f5fe; color: var(--tag-fish); }
     .tag-蛋 { background: #fff3e0; color: var(--tag-egg); }
     .tag-肉 { background: #ffebee; color: var(--tag-meat); }
+    .tag-全穀 { background: #efebe9; color: var(--tag-grain); }
+    .tag-蔬菜 { background: #e8f5e9; color: var(--tag-veg); }
 
     .hint { margin-top: 20px; color: var(--muted); font-size: 12px; text-align: center; line-height: 1.5; }
 
@@ -221,47 +225,41 @@
     </div>
 
     <div class="subtitle-banner">
-      🏛️ 依據衛生福利部國民健康署《每日飲食指南》<br>
-      原則：豆 > 魚 > 蛋 > 肉｜蛋白質 1 份 ≒ 7 克
+      🏛️ 衛生福利部國民健康署《每日飲食指南》六大類食物：<br>
+      全穀雜糧、豆魚蛋肉、乳品、蔬菜、水果、油脂與堅果種子
     </div>
 
     <form id="calcForm" onsubmit="event.preventDefault(); calculate();">
-      <!-- 國健署個人化身體數據估算 -->
+      <!-- 身體數據估算 -->
       <div class="form-row">
-        <div class="form-group">
-          <label for="activity">每日活動強度 (TDEE)</label>
-          <select id="activity">
-            <option value="1.2">久坐/辦公室族群 (基數 x 1.2)</option>
-            <option value="1.375">輕度運動/每週1-3天 (x 1.375)</option>
-            <option value="1.55">中度運動/每週3-5天 (x 1.55)</option>
-          </select>
-        </div>
         <div class="form-group">
           <label for="weight">體重 (kg)</label>
           <input type="number" id="weight" placeholder="例如：60" value="60" min="30" max="200" required>
         </div>
-      </div>
-
-      <div class="form-row">
         <div class="form-group">
-          <label for="budget">單餐預算上限 (元)</label>
-          <input type="number" id="budget" placeholder="例如：100" min="1" required>
-        </div>
-
-        <div class="form-group">
-          <label for="calories">單餐熱量上限 (kcal)</label>
-          <input type="number" id="calories" placeholder="例如：600" min="1" required>
+          <label for="activity">每日活動強度 (TDEE)</label>
+          <select id="activity">
+            <option value="1.2">久坐/辦公室族群 (x 1.2)</option>
+            <option value="1.375">輕度運動/每週1-3天 (x 1.375)</option>
+            <option value="1.55">中度運動/每週3-5天 (x 1.55)</option>
+          </select>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="category">國健署蛋白質優先順序</label>
+        <label for="calories">單餐熱量目標 (kcal)</label>
+        <input type="number" id="calories" placeholder="例如：600" min="1" required>
+      </div>
+
+      <div class="form-group">
+        <label for="category">偏好飲食類型 (國健署指引導向)</label>
         <select id="category">
-          <option value="ALL">全部類別（顯示所有符合條件）</option>
-          <option value="豆">🌿 豆類（首選：植物性蛋白、零膽固醇、高纖）</option>
-          <option value="魚">🐟 魚類與海鮮（次選：飽和脂肪低、富含 Omega-3）</option>
-          <option value="蛋">🥚 雞蛋（優質完全蛋白質、富含卵磷脂）</option>
-          <option value="肉">🥩 肉類（禽肉優先於紅肉、避免加工肉）</option>
+          <option value="ALL">全部推薦（均勻涵蓋六大類）</option>
+          <option value="豆">🌿 豆類優先（植物蛋白、高纖無膽固醇）</option>
+          <option value="魚">🐟 魚類/海鮮（富含 Omega-3 不飽和脂肪酸）</option>
+          <option value="全穀">🌾 全穀雜糧（未精製為主、低 GI 穩定血糖）</option>
+          <option value="蔬菜">🥦 高纖蔬菜組合（富含植化素與維生素）</option>
+          <option value="蛋肉">🥚🥩 蛋肉補充（優質蛋白、白肉優先於紅肉）</option>
         </select>
       </div>
 
@@ -272,14 +270,14 @@
 
     <!-- 國健署營養解析螢幕 -->
     <section id="recommendScreen" class="recommend-screen" aria-live="polite">
-      <div class="recommend-title">🎲 試算隨機首選餐點</div>
+      <div class="recommend-title">🎲 試算隨機首選餐點/組合</div>
       <div class="recommend-name" id="recName">-</div>
       <div class="recommend-meta" id="recMeta">-</div>
       
       <div class="hpa-info-grid">
-        <div>蛋白質相當於：<br><strong id="recPortion" style="color:#fff; font-size:14px;">-</strong> 份</div>
-        <div>佔個人每日蛋白質：<br><strong id="recRatio" style="color:var(--mint); font-size:14px;">-</strong></div>
-        <div style="grid-column: span 2; padding-top:4px;" id="recHpaTip">💡 國健署提醒：-</div>
+        <div>蛋白質份數：<br><strong id="recPortion" style="color:#fff; font-size:14px;">-</strong></div>
+        <div>占全天熱量目標：<br><strong id="recRatio" style="color:var(--mint); font-size:14px;">-</strong></div>
+        <div style="grid-column: span 2; padding-top:4px;" id="recHpaTip">💡 國健署六大類指引：-</div>
       </div>
     </section>
 
@@ -290,10 +288,9 @@
         <thead>
           <tr>
             <th>品名</th>
-            <th>類別</th>
-            <th>價格</th>
+            <th>分類</th>
             <th>熱量</th>
-            <th>蛋白質份數</th>
+            <th>三大營養素 (碳水/蛋白質/脂肪)</th>
           </tr>
         </thead>
         <tbody id="resultsTableBody">
@@ -301,28 +298,27 @@
       </table>
     </section>
 
-    <p class="hint">參考資料：衛福部國民健康署《每日飲食指南手冊》<br>三大營養素建議比例：蛋白質 10-20%、脂質 20-30%、醣類 50-60%</p>
+    <p class="hint">參考資料：衛福部國民健康署《每日飲食指南手冊》<br>三大營養素比例：碳水 50-60%、蛋白質 10-20%、脂質 20-30%</p>
   </main>
 
   <script>
-    // 擴充包含國健署指引提示的餐點資料庫
+    // 涵蓋國健署六大類食物的延伸外食資料庫
     const FOOD_DATABASE = [
-      { name: "高纖無糖豆漿", price: 25, calories: 160, protein: 15, category: "豆", tip: "植物蛋白首選，含大豆異黃酮與膳食纖維" },
-      { name: "涼拌毛豆仁", price: 35, calories: 110, protein: 9, category: "豆", tip: "原態豆類，高蛋白且飽和脂肪極低" },
-      { name: "滷豆腐", price: 20, calories: 90, protein: 7, category: "豆", tip: "傳統豆製品，易消化且富含植物蛋白" },
-      { name: "水煮鮭魚菲力", price: 85, calories: 220, protein: 24, category: "魚", tip: "富含 DHA 與 EPA 好油，優於紅肉脂肪" },
-      { name: "鮮魚味噌湯", price: 45, calories: 120, protein: 12, category: "魚", tip: "低脂海鮮來源，注意鹽份適量飲用" },
-      { name: "茶葉蛋", price: 13, calories: 75, protein: 7, category: "蛋", tip: "完全蛋白質，蛋黃富含卵磷脂與維生素B群" },
-      { name: "石安牧場溫泉蛋", price: 32, calories: 80, protein: 8, category: "蛋", tip: "輕鬆補充優質蛋白質，吸收率高" },
-      { name: "即食舒肥雞胸肉", price: 59, calories: 140, protein: 23, category: "肉", tip: "白肉首選，低脂高蛋白，優於豬牛肉" },
-      { name: "美式烤雞腿", price: 65, calories: 280, protein: 20, category: "肉", tip: "去除外皮可大幅減少飽和脂肪攝取" },
-      { name: "經典牛丼便當", price: 95, calories: 650, protein: 25, category: "肉", tip: "紅肉飽和脂肪較高，國健署建議偶爾食用即可" }
+      { name: "高纖無糖豆漿 + 烤地瓜", calories: 300, carbs: 40, protein: 18, fat: 5, category: "豆", hpaGroup: "豆類 + 全穀雜糧類", tip: "未精製全穀搭配植物性蛋白，高纖且能穩定血糖" },
+      { name: "涼拌毛豆仁 + 燕麥奶", calories: 250, carbs: 30, protein: 12, fat: 6, category: "豆", hpaGroup: "豆類 + 全穀雜糧類", tip: "毛豆為植物蛋白首選，含豐富膳食纖維與大豆異黃酮" },
+      { name: "水煮鮭魚菲力 + 糙米飯", calories: 420, carbs: 45, protein: 28, fat: 12, category: "魚", hpaGroup: "魚類 + 全穀雜糧類", tip: "深海魚富含 Omega-3，搭配糙米滿足每日全穀 1/3 需求" },
+      { name: "鮮魚味噌湯 + 蒸地瓜", calories: 240, carbs: 32, protein: 15, fat: 4, category: "魚", hpaGroup: "魚類 + 全穀雜糧類", tip: "低脂優質蛋白，提供豐富微量元素與維生素 A" },
+      { name: "藜麥雞肉沙拉 + 堅果", calories: 380, carbs: 25, protein: 26, fat: 18, category: "蔬菜", hpaGroup: "蔬菜類 + 肉類 + 堅果類", tip: "達每日蔬菜 1 份，堅果提供國健署推薦之每日好油" },
+      { name: "關東煮蘿蔔與海帶 + 滷豆腐", calories: 180, carbs: 15, protein: 10, fat: 6, category: "蔬菜", hpaGroup: "蔬菜類 + 豆類", tip: "高纖低熱量組合，補足外食族最缺乏的膳食纖維" },
+      { name: "燕麥片 + 原味無糖優格", calories: 280, carbs: 38, protein: 12, fat: 6, category: "全穀", hpaGroup: "全穀雜糧類 + 乳品類", tip: "國健署強烈建議每日攝取 1.5-2 杯乳品以補足鈣質" },
+      { name: "蒸玉米 + 石安牧場溫泉蛋", calories: 210, carbs: 26, protein: 10, fat: 7, category: "全穀", hpaGroup: "全穀雜糧類 + 蛋類", tip: "未精製主食補充維生素 B 群，蛋黃富含卵磷脂" },
+      { name: "即食舒肥雞胸肉 + 烤飯糰", calories: 360, carbs: 42, protein: 25, fat: 5, category: "蛋肉", hpaGroup: "肉類 + 全穀雜糧類", tip: "白肉低脂高蛋白，避開加工紅肉以降低飽和脂肪" },
+      { name: "茶葉蛋 + 低脂鮮乳", calories: 230, carbs: 12, protein: 15, fat: 10, category: "蛋肉", hpaGroup: "蛋類 + 乳品類", tip: "雙重優質完全蛋白與鈣質，適合運動後快速補充" }
     ];
 
     function calculate() {
       const weight = Number(document.getElementById('weight').value) || 60;
       const activity = Number(document.getElementById('activity').value) || 1.2;
-      const budgetInput = document.getElementById('budget').value;
       const caloriesInput = document.getElementById('calories').value;
       const categorySelect = document.getElementById('category').value;
 
@@ -336,74 +332,74 @@
       recommendScreen.classList.remove('active');
       resultsArea.classList.remove('active');
 
-      const budget = Number(budgetInput);
       const calories = Number(caloriesInput);
 
-      if (!budgetInput || !caloriesInput || isNaN(budget) || isNaN(calories)) {
-        showMsg('error', '❌ 請完整輸入有效的預算與熱量數值！');
+      if (!caloriesInput || isNaN(calories)) {
+        showMsg('error', '❌ 請輸入有效的單餐熱量上限數值！');
         return;
       }
 
-      if (budget <= 0 || calories <= 0) {
-        showMsg('error', '❌ 預算與熱量必須為大於 0 的正整數！');
+      if (calories <= 0) {
+        showMsg('error', '❌ 熱量目標必須為大於 0 的正整數！');
         return;
       }
 
-      // 國健署防呆與健康建議
       if (calories < 300) {
         showMsg('warning', '⚠️ 國健署提醒：成年人單餐熱量建議不低於 300 大卡，過度節食可能導致基礎代謝率下降！');
       }
 
-      // 1. 估算國健署建議每日蛋白質需求 (每公斤體重 1.1 克)
-      const dailyProteinTargetGram = weight * 1.1; 
+      // 計算個人全天估算熱量 TDEE
+      const dailyTDEE = Math.round(weight * 22 * activity); 
 
-      // 2. 條件篩選
+      // 條件篩選
       const results = [];
       for (let i = 0; i < FOOD_DATABASE.length; i++) {
         const item = FOOD_DATABASE[i];
-        if (item.price <= budget && item.calories <= calories) {
-          if (categorySelect === 'ALL' || item.category === categorySelect) {
+        if (item.calories <= calories) {
+          if (categorySelect === 'ALL') {
+            results.push(item);
+          } else if (categorySelect === '蛋肉' && (item.category === '蛋' || item.category === '肉' || item.category === '蛋肉')) {
+            results.push(item);
+          } else if (item.category === categorySelect) {
             results.push(item);
           }
         }
       }
 
       if (results.length === 0) {
-        showMsg('warning', '⚠️ 在您設定的條件下找不到合適的餐點，建議提高預算或放寬熱量限制！');
+        showMsg('warning', '⚠️ 在您設定的熱量限制下找不到合適的餐點，建議適度放寬熱量限制！');
         return;
       }
 
-      // 3. 隨機推薦餐點與國健署指南換算
+      // 隨機推薦餐點與國健署指南換算
       const randomItem = results[Math.floor(Math.random() * results.length)];
-      // 國健署定義：1 份豆魚蛋肉類 = 7 公克蛋白質
       const proteinPortion = (randomItem.protein / 7).toFixed(1); 
-      const dailyRatio = Math.round((randomItem.protein / dailyProteinTargetGram) * 100);
+      const mealTdeeRatio = Math.round((randomItem.calories / dailyTDEE) * 100);
 
       document.getElementById('recName').textContent = randomItem.name;
-      document.getElementById('recMeta').textContent = `${randomItem.category}類 · ${randomItem.price}元 · ${randomItem.calories} kcal · 蛋白質 ${randomItem.protein}g`;
-      document.getElementById('recPortion').textContent = `${proteinPortion} 份`;
-      document.getElementById('recRatio').textContent = `約 ${dailyRatio}%`;
+      document.getElementById('recMeta').textContent = `包含六大類：${randomItem.hpaGroup} · 熱量 ${randomItem.calories} kcal`;
+      document.getElementById('recPortion').textContent = `${proteinPortion} 份 (約 ${randomItem.protein}g)`;
+      document.getElementById('recRatio').textContent = `約全天需求 ${mealTdeeRatio}%`;
       document.getElementById('recHpaTip').textContent = `💡 國健署解析：${randomItem.tip}`;
       
       recommendScreen.classList.add('active');
 
-      // 4. 渲染表格
-      document.getElementById('resultsTitle').textContent = `📋 符合條件的餐點 (共 ${results.length} 筆)`;
+      // 渲染表格
+      document.getElementById('resultsTitle').textContent = `📋 符合熱量條件的外食組合 (共 ${results.length} 筆)`;
       resultsTableBody.innerHTML = '';
       
       results.forEach(item => {
-        const portions = (item.protein / 7).toFixed(1);
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><strong>${item.name}</strong></td>
-          <td><span class="tag tag-${item.category}">${item.category}類</span></td>
-          <td>${item.price} 元</td>
+          <td><strong>${item.name}</strong><br><small style="color:var(--muted);">${item.hpaGroup}</small></td>
+          <td><span class="tag tag-${item.category}">${item.category}</span></td>
           <td>${item.calories} kcal</td>
-          <td>${item.protein}g (<b>${portions}</b> 份)</td>
+          <td>碳水 ${item.carbs}g | 蛋白 ${item.protein}g | 脂肪 ${item.fat}g</td>
         `;
         resultsTableBody.appendChild(tr);
       });
 
+      resultsArea.classList.active;
       resultsArea.classList.add('active');
     }
 
